@@ -21,7 +21,6 @@ function getVault(vaultAddress: Address): Vault {
   vault.getPricePerFullShare = vaultContract.getPricePerFullShare();
   vault.totalSupply = vaultContract.totalSupply();
   vault.balance = vaultContract.balance();
-  vault.available = vaultContract.available();
   vault.token = vaultContract.token();
   vault.symbol = vaultContract.symbol();
   vault.name = vaultContract.name();
@@ -87,7 +86,6 @@ export function handleTransfer(event: TransferEvent): void {
   transfer.getPricePerFullShare = vault.getPricePerFullShare;
   transfer.balance = balance;
   transfer.totalSupply = totalSupply;
-  transfer.available = vault.available;
   transfer.transactionHash = transactionHash;
   transfer.save();
 }

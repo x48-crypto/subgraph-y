@@ -78,7 +78,7 @@ dataSources:
           handler: handleTransfer
       file: ./src/mapping.ts
   - kind: ethereum/contract
-    name: yYFIault
+    name: yYFIvault
     network: mainnet
     source:
       address: "0xBA2E7Fed597fd0E3e70f5130BcDbbFE06bB94fe1"
@@ -177,3 +177,53 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: yETHVault
+    network: mainnet
+    source:
+      address: "0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7"
+      abi: V1Contract
+      startBlock: 10774489
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+        - Deposit
+        - Withdraw
+        - Transfer
+      abis:
+        - name: V1Contract
+          file: ./abis/V1Contract.json
+        - name: erc20Contract
+          file: ./abis/erc20Contract.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts 
+  - kind: ethereum/contract
+    name: yaLinkVault
+    network: mainnet
+    source:
+      address: "0x29E240CFD7946BA20895a7a02eDb25C210f9f324"
+      abi: V1Contract
+      startBlock: 10599617
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+        - Deposit
+        - Withdraw
+        - Transfer
+      abis:
+        - name: V1Contract
+          file: ./abis/V1Contract.json
+        - name: erc20Contract
+          file: ./abis/erc20Contract.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts 
