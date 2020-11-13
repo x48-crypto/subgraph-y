@@ -252,3 +252,28 @@ dataSources:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
       file: ./src/mapping.ts 
+  - kind: ethereum/contract
+    name: yGUSDVault
+    network: mainnet
+    source:
+      address: "0xec0d8d3ed5477106c6d4ea27d90a60e594693c90"
+      abi: V1Contract
+      startBlock: 11065127
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - Vault
+        - Deposit
+        - Withdraw
+        - Transfer
+      abis:
+        - name: V1Contract
+          file: ./abis/V1Contract.json
+        - name: erc20Contract
+          file: ./abis/erc20Contract.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/mapping.ts 
