@@ -1,4 +1,4 @@
-import { ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   V2Contract,
   Transfer as TransferEvent,
@@ -13,7 +13,12 @@ import { Vault, Deposit, Account, Withdraw, Transfer } from "../generated/schema
 function getVault(vaultAddress: Address): Vault {
   let vault = new Vault(vaultAddress.toHexString());
   let vaultContract = V2Contract.bind(vaultAddress);
-  vault.getPricePerFullShare = vaultContract.pricePerShare();
+  let getPricePerFullShare = vaultContract.try_pricePerShare();
+  if (!getPricePerFullShare.reverted) {
+    vault.getPricePerFullShare = getPricePerFullShare.value
+  } else {
+    vault.getPricePerFullShare = new BigInt(0)
+  }
   vault.totalSupply = vaultContract.totalAssets();
   vault.balance = vaultContract.totalSupply();
   vault.token = vaultContract.token();
@@ -47,10 +52,13 @@ export function handleTransferV2(event: TransferEvent): void {
   // Vault deposit
   if (vaultDeposit) {
     let deposit = new Deposit(transactionId);
-    let amount = (balance * value) / totalSupply;
+    if (totalSupply.toString() != "0") {
+      deposit.amount = (balance * value) / totalSupply;
+    } else {
+      deposit.amount = new BigInt(0);
+    }
     deposit.vaultAddress = vaultAddress;
     deposit.account = to;
-    deposit.amount = amount;
     deposit.shares = value;
     deposit.timestamp = timestamp;
     deposit.blockNumber = blockNumber;
@@ -61,10 +69,14 @@ export function handleTransferV2(event: TransferEvent): void {
   // Vault withdrawal
   if (vaultWithdrawal) {
     let withdraw = new Withdraw(transactionId);
-    let amount = (balance * value) / totalSupply;
     withdraw.vaultAddress = vaultAddress;
     withdraw.account = from;
-    withdraw.amount = amount;
+    if (totalSupply.toString() != "0") {
+      withdraw.amount = (balance * value) / totalSupply;
+    } else {
+      withdraw.amount = new BigInt(0);
+    }
+
     withdraw.shares = value;
     withdraw.timestamp = timestamp;
     withdraw.blockNumber = blockNumber;

@@ -52,10 +52,13 @@ export function handleTransferV1(event: TransferEvent): void {
   // Vault deposit
   if (vaultDeposit) {
     let deposit = new Deposit(transactionId);
-    let amount = (balance * value) / totalSupply;
     deposit.vaultAddress = vaultAddress;
     deposit.account = to;
-    deposit.amount = amount;
+    if (totalSupply.toString() != "0") {
+      deposit.amount = (balance * value) / totalSupply;
+    } else {
+      deposit.amount = new BigInt(0);
+    }
     deposit.shares = value;
     deposit.timestamp = timestamp;
     deposit.blockNumber = blockNumber;
@@ -66,10 +69,13 @@ export function handleTransferV1(event: TransferEvent): void {
   // Vault withdrawal
   if (vaultWithdrawal) {
     let withdraw = new Withdraw(transactionId);
-    let amount = (balance * value) / totalSupply;
     withdraw.vaultAddress = vaultAddress;
     withdraw.account = from;
-    withdraw.amount = amount;
+    if (totalSupply.toString() != "0") {
+      withdraw.amount = (balance * value) / totalSupply;
+    } else {
+      withdraw.amount = new BigInt(0);
+    }
     withdraw.shares = value;
     withdraw.timestamp = timestamp;
     withdraw.blockNumber = blockNumber;
