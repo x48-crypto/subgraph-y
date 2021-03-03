@@ -6,7 +6,6 @@ type Vault @entity {
   token: Bytes!
   symbol: String!
   name: String!
-  controller: Bytes!
   timestamp: BigInt!
   blockNumber: BigInt!
 }
@@ -23,6 +22,13 @@ type Transfer @entity {
   balance: BigInt!
   totalSupply: BigInt!
   transactionHash: Bytes!
+}
+
+type Account @entity {
+  id: ID!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  amount: BigInt!
 }
 
 type Deposit @entity {

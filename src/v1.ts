@@ -1,34 +1,33 @@
-import { ethereum } from "@graphprotocol/graph-ts";
+import { BigInt, ethereum } from "@graphprotocol/graph-ts";
 import {
   V1Contract,
-  DepositCall,
-  DepositAllCall,
-  WithdrawCall,
-  WithdrawAllCall,
   Transfer as TransferEvent,
-} from "../generated/yUSDVault/V1Contract";
+} from "../generated/yearn TrueUSD/V1Contract";
 
-import { erc20Contract } from "../generated/yUSDVault/erc20Contract";
+import { erc20Contract } from "../generated/yearn TrueUSD/erc20Contract";
 
 import { Address } from "@graphprotocol/graph-ts";
 
-import { Vault, Deposit, Withdraw, Transfer } from "../generated/schema";
+import { Vault, Account, Deposit, Withdraw, Transfer } from "../generated/schema";
 
 function getVault(vaultAddress: Address): Vault {
   let vault = new Vault(vaultAddress.toHexString());
   let vaultContract = V1Contract.bind(vaultAddress);
-  vault.balance = vaultContract.balance();
-  vault.getPricePerFullShare = vaultContract.getPricePerFullShare();
+  let getPricePerFullShare = vaultContract.try_getPricePerFullShare();
+  if (!getPricePerFullShare.reverted) {
+    vault.getPricePerFullShare = getPricePerFullShare.value
+  } else {
+    vault.getPricePerFullShare = new BigInt(0)
+  }
   vault.totalSupply = vaultContract.totalSupply();
   vault.balance = vaultContract.balance();
   vault.token = vaultContract.token();
   vault.symbol = vaultContract.symbol();
   vault.name = vaultContract.name();
-  vault.controller = vaultContract.controller();
   return vault;
 }
 
-export function handleTransfer(event: TransferEvent): void {
+export function handleTransferV1(event: TransferEvent): void {
   let emptyAddress = "0x0000000000000000000000000000000000000000";
   let transactionId = event.transaction.hash.toHexString() + '-' + event.transactionLogIndex.toString();
   let transactionHash = event.transaction.hash;
@@ -38,6 +37,7 @@ export function handleTransfer(event: TransferEvent): void {
   let to = event.params.to;
   let from = event.params.from;
   let value = event.params.value;
+  let vaultContract = V1Contract.bind(vaultAddress);
   let transfer = new Transfer(transactionId);
   let vault = getVault(vaultAddress);
   let vaultDeposit = from.toHexString() == emptyAddress;
@@ -88,4 +88,12 @@ export function handleTransfer(event: TransferEvent): void {
   transfer.totalSupply = totalSupply;
   transfer.transactionHash = transactionHash;
   transfer.save();
+  
+  // Save account
+  let accountAddress = vaultDeposit ? to : from;
+  let account = new Account(accountAddress.toHexString());
+  account.amount = vaultContract.balanceOf(to)
+  account.timestamp = timestamp;
+  account.blockNumber = blockNumber;
+  account.save()
 }
