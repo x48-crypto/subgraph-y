@@ -3,7 +3,6 @@ type Vault @entity {
   getPricePerFullShare: BigInt!
   totalSupply: BigInt!
   balance: BigInt!
-  available: BigInt!
   token: Bytes!
   symbol: String!
   name: String!
@@ -23,7 +22,7 @@ type Transfer @entity {
   getPricePerFullShare: BigInt!
   balance: BigInt!
   totalSupply: BigInt!
-  available: BigInt!
+  transactionHash: Bytes!
 }
 
 type Deposit @entity {
