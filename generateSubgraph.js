@@ -11,7 +11,7 @@ schema:
   file: ./schema.graphql
 dataSources:`;
 
-const startBlock = 10500000;
+const startBlock = 10532707; // USDC
 
 const generateV1Source = (vault) => `
   - kind: ethereum/contract
